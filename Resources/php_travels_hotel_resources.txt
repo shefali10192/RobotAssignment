@@ -1,0 +1,13 @@
+*** Settings ***
+#Author Shefali Shah
+Library    SeleniumLibrary
+#Library    Selenium2Library
+Resource    ../../RobotFramework/php_travels_ hotel_ labels.txt
+Resource    ../../RobotFramework/php_travels_ hotel_ variables.txt
+Library    OperatingSystem
+Resource    ../../RobotFramework/php_travels_keywords.txt
+Library    Collections
+Library    DateTime
+
+
+

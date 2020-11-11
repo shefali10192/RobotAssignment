@@ -1,0 +1,46 @@
+*** Variables ***
+
+######## SignUp & Login Form ########
+${CSS_MyAccount}    div.dropdown-login
+${XPATH_SignUp}    //a[text()='Sign Up']
+${CSS_FirstName}    input[name='firstname']
+${CSS_LastName}    input[name='lastname']
+${CSS_MobileNumber}    input[name='phone']
+${CSS_EmailAddress}    input[name='email']
+${CSS_Password}    input[name='password']
+
+${CSS_ConfirmPassword}    input[name='confirmpassword']
+${CSS_SignUpSubmitButton}    div.form-group>button
+${CSS_NameMyAccount}    div.col-md-8>h3
+${CSS_MyAccountLogged}  //div.class='dropdown-login'>a
+#${CSS_MyAccountLogged}  //div[@class='dropdown dropdown-login dropdown-tab']/a
+${XPATH_Logout}    //a[text()='Logout']
+
+${CSS_Username}   input[name='username']
+${XPATH_Login}    //button[text()='Login']
+### Search Functinality
+${CSS_HotelTab}    li>a.hotels
+${CSS_Destination}    div#s2id_autogen16
+${XPATH_Search}    //button[contains(text(),'Search')]
+${CSS_ResultList}    ul.select2-result-sub
+${CSS_SearchResult}   div>h3.heading-title
+${CSS_SearchListHotelName}    div.content-wrapper>div.product-long-item-wrapper>div.product-long-item>div>div>div>div>div>div>h5
+${CSS_SearchListHotelPrice}   div.content-wrapper>div.product-long-item-wrapper>div.product-long-item>div>div>div>div>div>div>div>span
+${XPATH_SearchListHotelPrice}   //div[@class='content-wrapper']/div[@class='product-long-item-wrapper']/div[@class='product-long-item']/div/div/div/div/div/div/div/span
+${CSS_SearchListHotelRating}    div.content-wrapper>div.product-long-item-wrapper>div.product-long-item>div>div>div>div>div>div>div>p>span.bg-primary
+#${XPATH_SearchListHotelRating}    //div[@class='content-wrapper']/div[@class='product-long-item-wrapper']/div[@class='product-long-item']/div/div/div/div/div/div/div/p/span[@class='bg-primary']
+${CSS_CheckInDate}    input#checkin
+${CSS_CheckOutDate}   input#checkout
+${XPATH_AvailableRoom}    //li/a[text()='Available Rooms']
+${CSS_AvailableRoomList}  div.content>h5
+${CSS_AvailableRoomPrice}    p>span.number
+${CSS_AveragePrice}    div.price>span>span
+${CSS_DiscountPrice}    div.discount
+${CSS_CheckInDateModify}    //input[name='checkin']
+${CSS_CheckOutDateModify}    //input[name='checkout']
+${XPATH_ModifyButton}    //button[text()='Modify']
+${CSS_NavTitle}    div.datepicker--nav-title
+${CSS_Pagination}    ul.pagination>li
+${XPATH_PaginationNext}    //li/a[text()='>']
+${CSS_Currency}    div.dropdown dropdown-currency
+${XPATH_INRSelection}    //a[text()='INR']

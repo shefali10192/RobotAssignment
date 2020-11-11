@@ -1,0 +1,303 @@
+*** Settings ***
+Resource    ../RobotFramework/Resources/php_travels_hotel_resources.txt
+Library    datetime
+
+*** Keywords ***
+Open Browser and Login
+   SeleniumLibrary.open browser    ${URL}    ${Browser}
+    SeleniumLibrary.maximize browser window
+
+close Browser
+    close all browsers
+    run keyword if test failed    Log Screenshot
+
+Log Screenshot
+    capture page screenshot
+
+Sign Up And Login
+    set selenium speed    5 seconds
+    #### Click on My Account then SignUp button
+    click element    css:${CSS_MyAccount}
+    wait until element is visible    ${XPATH_SignUp}
+    click element    ${xpath_signup}
+
+    ### Checking the Page Title
+    ${Title}    get title
+    should be equal    ${Title}    ${SignUpTitle}
+
+    #### Enter all the fields Details
+    input text    css:${CSS_FirstName}    ${FirstName}
+    input text    css:${CSS_LastName}   ${LastName}
+    input text    css:${CSS_MobileNumber}   ${MobileNumber}
+    input text    css:${CSS_EmailAddress}   ${EmailAddress}
+    input text    css:${CSS_Password}   ${password}
+    input text    css:${CSS_ConfirmPassword}    ${password}
+
+    ### Scroll Down by 350 pixels
+    execute javascript    window.scrollTo(0,350)
+
+    ### Click on Sign up button
+    click button    css:${CSS_SignUpSubmitButton}
+
+    ### Verifying My account page title
+    ${MyAccountTitleActual}    get title
+    should be equal    ${MyAccountTitleActual}  ${MyAccountTitle}
+    ${NameMyAccountActual}  get text    css:${CSS_NameMyAccount}
+    should be equal     Hi, ${FirstName} ${LastName}    ${NameMyAccountActual}
+
+    ### Logout and then Login
+    click element    ${CSS_MyAccountLogged}
+    wait until element is visible    ${XPATH_Logout}
+    click element    ${XPATH_Logout}
+    wait until element is visible   ${XPATH_Login}
+
+    ## Enter Email and Password then click on Login Button
+    input text    css:${CSS_Username}     ${EmailAddress}
+    input text    css:${CSS_Password}     ${Password}
+    click element    ${XPATH_Login}
+
+Search By Destination
+
+     ### Scroll Down by 350 pixels
+    execute javascript    window.scrollTo(0,350)
+    wait until element is visible   css:${CSS_HotelTab}
+    click element    css:${CSS_HotelTab}
+    click element    css:${CSS_Destination}
+    press keys    css:${CSS_Destination}    Dubai
+
+     # Click on Result List
+    wait until element is visible    css:${CSS_ResultList}
+    click element    css:${CSS_ResultList}
+
+    # Click on Search Button
+    click element    ${XPATH_Search}
+
+    wait until element is visible    css:${CSS_SearchResult}
+    ${SearchHotelText1}=    get text    css:${CSS_SearchResult}
+    should contain    ${SearchHotelText1}    Hotels
+
+
+    ## Verify Title
+    ${SearchResultActual}    get title
+    log    ${SearchResultActual}
+    should be equal    ${SearchResultActual}    ${SearchResultTitle}
+
+Search By Hotel
+    [ARGUMENTS]    ${HotelSearch}    ${CheckInDate}    ${CheckOutDate}
+    set selenium speed    7 seconds
+
+     ### Scroll Down by 350 pixels
+    execute javascript    window.scrollTo(0,350)
+    wait until element is visible   css:${CSS_HotelTab}
+    click element    css:${CSS_HotelTab}
+    click element    css:${CSS_Destination}
+    press keys    css:${CSS_Destination}    ${HotelSearch}
+
+    # Click on Result List
+    wait until element is visible    css:${CSS_ResultList}
+    click element    css:${CSS_ResultList}
+
+   # Remove default date to Check In Date and enter Current Date
+    clear element text    css:${CSS_CheckInDate}
+    input text    css:${CSS_CheckInDate}    ${CheckInDate}
+
+     # Remove date to Check Out Date and enter Next Date
+    clear element text    css:${CSS_CheckOutDate}
+    click element    css:${CSS_CheckOutDate}
+    input text    css:${CSS_CheckOutDate}    ${CheckOutDate}
+
+    # Click on Search Button
+    click element    ${XPATH_Search}
+
+# This function verifies the title  of Hotel
+Verify Hotel Page
+    [Arguments]    ${HotelSearch}
+    ${HotelTitlPage}    get title
+    should be equal    ${HotelTitlPage}    ${HotelSearch}
+
+Get Available Room Details
+
+   ### Available Rooms name
+    @{WebElementsRoomsName}=   Get WebElements    css=${CSS_AvailableRoomList}
+
+    @{AvailableRoomsNameList}    create list
+    ${Text}    Get Element Count    css=${CSS_AvailableRoomList}
+
+    # Below FOR loop will provide the each room name
+    FOR    ${DescRooms}    IN    @{WebElementsRoomsName}
+       ${RoomName}    get text    ${DescRooms}
+       append to list    ${AvailableRoomsNameList}   ${RoomName}
+
+    END
+
+     ### Available Rooms name
+    @{WebElementsRoomsPrice}=   Get WebElements    css=${CSS_AvailableRoomPrice}
+
+    @{AvailableRoomsPriceList}    create list
+    ${Text}    Get Element Count    css=${CSS_AvailableRoomPrice}
+
+    # Below FOR loop will provide the each room price
+    FOR    ${DescRoomsPrice}    IN    @{WebElementsRoomsPrice}
+       ${RoomPrice}    get text    ${DescRoomsPrice}
+       append to list    ${AvailableRoomsPriceList}   ${RoomPrice}
+
+    END
+
+    # Below for loop displays the Hotel Avialble Room and Price
+    FOR    ${i}    IN RANGE    ${Text}
+                 log to console   Hotel Name: ${AvailableRoomsNameList[${i}]} ,Price: ${AvailableRoomsPriceList[${i}]}
+    END
+
+Get Hotel Details
+   set selenium speed    5 seconds
+
+
+   ### Hotel Name Details
+    @{WebElementsHotelName}=   Get WebElements    css:${CSS_SearchListHotelName}
+    Set Global Variable    ${WebElementsHotelName}
+    @{HotelNameList}    create list
+    ${Text}    Get Element Count    css:${CSS_SearchListHotelName}
+
+    # Below FOR Loop provides the Hotel Name
+    FOR    ${DescHotel}    IN    @{WebElementsHotelName}
+       ${HotelName}    get text    ${DescHotel}
+       append to list    ${HotelNameList}   ${HotelName}
+
+    END
+
+    ### Hotel Price Details
+     @{WebElementsPrice}=   Get WebElements    css=${CSS_SearchListHotelPrice}
+    Set Global Variable    ${WebElementsPrice}
+    @{HotelPriceList}   create list
+    ${HotelCount}    Get Element Count    css=${CSS_SearchListHotelPrice}
+
+
+    FOR    ${DescPrice}    IN    @{WebElementsPrice}
+       ${HotelPrice}    get text    ${DescPrice}
+       append to list    ${HotelPriceList}  ${HotelPrice}
+    END
+
+    ### Hotel Price Rating
+     @{WebElementsRating}=   Get WebElements    css=${CSS_SearchListHotelRating}
+    Set Global Variable    ${WebElementsRating}
+    @{HotelRatingList}    create list
+    ${Text}    Get Element Count    css=${CSS_SearchListHotelRating}
+
+    FOR    ${DescRating}    IN    @{WebElementsRating}
+       ${HotelRating}    get text    ${DescRating}
+       append to list    ${HotelRatingList}  ${HotelRating}
+     END
+
+    @{HotelGeneralList}    create list
+    &{HotelDictionary}    create dictionary
+
+    FOR    ${i}    IN RANGE    ${HotelCount}
+
+         log to console   Hotel Name: ${HotelNameList[${i}]} ,Price: ${HotelPriceList[${i}]} ,Rating: ${HotelRatingList[${i}]}
+    END
+    #END
+Verify Average Price
+    ${AveragePrice}    get text    css:${CSS_AveragePrice}
+    log to console  ${AveragePrice}
+
+Verify Discount Perentage
+    ${DiscountPrice}    get text    css:${CSS_DiscountPrice}
+    log to console    ${DiscountPrice}
+
+Modify Check In And Check Out Date
+    [Arguments]    ${CheckInDate}    ${CheckOutDate}
+
+    Select Date    css:${CSS_CheckInDateModify}    ${CheckInDate}
+    execute javascript  o  window.scrollTo(0,600)
+    Select Date    css:${CSS_CheckOutDateModify}    ${CheckOutDate}
+    input text    css:${CSS_CheckInDateModify}    ${CheckInDate}
+    click element    css:${CSS_CheckOutDateModify}
+    clear element text    css:${CSS_CheckOutDateModify}
+    input text    css:${CSS_CheckOutDateModify}   ${CheckOutDate}
+    execute javascript    window.scrollTo(0,1200)
+    click element    ${XPATH_ModifyButton}
+
+
+Select Date
+    [Arguments]    ${XPATH_CheckInDateModify}    ${Date}
+    click element    ${XPATH_CheckInDateModify}
+
+    ${Year}=    convert date    ${Date}    result_format=%Y    date_format=%d/%m/%Y
+    ${Month}=    convert date    ${Date}    result_format=%b    date_format=%d/%m/%Y
+    ${Day}=    convert date    ${Date}    result_format=%d    date_format=%d/%m/%Y
+    click element    //div[@class='datepicker--nav-title']
+    click element    //div[@class='datepicker--nav-title']
+    click element    //div[text()=${Year}]
+    click element    //div[text()='${Month}']
+    click element    //div[text()=${Day}]
+    press keys    ${XPATH_CheckInDateModify}    \\\27
+
+Verify Hotel Details Pagination
+     ${Pagination}=    get element count    css=${css_Pagination}
+
+     FOR    ${i}    IN RANGE    ${Pagination}-2
+        log to console    ${i}
+        Get Hotel Details
+        execute javascript    window.scrollTo(0,1100)
+        RUN KEYWORD IF    ${i}<2    Next Pagination Click
+     END
+Next Pagination Click
+   click element    ${XPATH_PaginationNext}
+
+Select INR Currency
+    set selenium speed    30 seconds
+    click element    //a[@id='dropdownCurrency'][1]
+    click element    ${XPATH_INRSelection}
+Check And Verify SortCurrency}
+    click element    ${XPATH_INRSelection}
+Check And Verify Sorting As Per Rating
+    set selenium speed    15 seconds
+    #click element    //input[@id=${Rating}]
+
+   @{WebElementsHotelName}=   Get WebElements    css=${CSS_SearchListHotelName}
+    Set Global Variable    ${WebElementsHotelName}
+    @{HotelNameList}    create list
+    ${Text}    Get Element Count    css=${CSS_SearchListHotelName}
+    FOR    ${DescHotel}    IN    @{WebElementsHotelName}
+       ${HotelName}    get text    ${DescHotel}
+
+       ${RatingCount}=    get element count    xpath=//a[text()='${HotelName}']//parent::h5//preceding-sibling::div[@class='rating-item rating-sm rating-inline']/div/span[@class='rating-icon fas fa-star rating-rated']
+
+       RUN KEYWORD IF    ${RatingCount}!=${Rating}    Check Rating    ${RatingCount}
+
+    END
+
+Check Rating
+    [arguments]    ${RatingCount}
+    should be equal    ${RatingCount}    ${Rating}
+
+Check And Verify Sorting of Price
+     @{WebElementsPrice}=   Get WebElements    css=${CSS_SearchListHotelPrice}
+    Set Global Variable    ${WebElementsPrice}
+    @{HotelPriceList}   create list
+    ${Text}    Get Element Count    css=${CSS_SearchListHotelPrice}
+    FOR    ${DescPrice}    IN    @{WebElementsPrice}
+       ${HotelPrice}    get text    ${DescPrice}
+       append to list    ${HotelPriceList}  ${HotelPrice}
+    END
+    ${ActualHotelPriceList}=  copy list    ${HotelPriceList}
+    sort list    ${HotelPriceList}
+    log to console    ${HotelPriceList}
+    log to console    ${ActualHotelPriceList}
+    lists should be equal    ${ActualHotelPriceList}     ${HotelPriceList}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
